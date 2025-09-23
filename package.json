@@ -1,17 +1,13 @@
 {
   "name": "quinto-monitor",
   "version": "1.0.0",
-  "description": "Moniteur QuintoAndar",
   "main": "monitor.js",
   "scripts": {
     "start": "node monitor.js"
   },
-  "author": "Mademoiselle",
-  "license": "ISC",
   "dependencies": {
-    "chalk": "^5.3.0",
-    "express": "^4.21.2",
-    "node-fetch": "^3.3.2",
-    "puppeteer": "^21.11.0"
+    "puppeteer": "^24.4.0",
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
   }
 }
