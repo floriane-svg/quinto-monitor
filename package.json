@@ -1,7 +1,7 @@
 {
   "name": "quinto-monitor",
   "version": "1.0.0",
-  "description": "Moniteur QuintoAndar",
+  "description": "Moniteur QuintoAndar prêt pour EvenNode",
   "main": "monitor.js",
   "scripts": {
     "start": "node monitor.js"
