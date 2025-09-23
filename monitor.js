@@ -1,10 +1,9 @@
 const puppeteer = require('puppeteer-core');
 const fetch = require('node-fetch');
-const chalk = require('chalk');
 const express = require('express');
 const app = express();
 
-// ⚡ Token et chat ID Telegram
+// ⚡ Token Telegram
 const TELEGRAM_TOKEN = '8249846675:AAFc5uAjkhFWRzXTo73wvv8mmOYTRfh7CPE';
 const CHAT_ID = '8291065466';
 
@@ -13,28 +12,25 @@ const URL = 'https://www.quintoandar.com.br/alugar/imovel/rio-de-janeiro-rj-bras
 const SELECTOR = '#__next > div.cozy__theme--default.cozy__theme--default-next > div > main > section.SideMenuHouseList_customSection__XJ5QW > div > div.EmptySearchState_wrapper__TKEeL > div > h3';
 const TEXT_TO_CHECK = 'Não há imóveis no QuintoAndar para esta busca.';
 
-let lastState = true; // true = pas d’annonce, false = annonce détectée
+let lastState = true;
 
-// 💌 Fonction pour envoyer un message Telegram
+// 🔔 Envoi Telegram
 async function sendTelegram(msg) {
     try {
         const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}`;
         const res = await fetch(url);
         const data = await res.json();
-        console.log(chalk.green(`Notif Telegram envoyée: ${data.ok}`));
+        console.log('Notif Telegram envoyée:', data.ok);
     } catch (err) {
-        console.error(chalk.red('Erreur Telegram:'), err);
+        console.error('Erreur Telegram:', err);
     }
 }
 
-// 🔍 Vérifie la page
+// 🔍 Vérification de la page
 async function checkPage() {
     let browser;
     try {
-        browser = await puppeteer.launch({ 
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
+        browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
         await page.goto(URL, { waitUntil: 'networkidle2', timeout: 60000 });
 
@@ -45,33 +41,28 @@ async function checkPage() {
         const timestamp = new Date().toLocaleTimeString();
 
         if (isEmpty && !lastState) {
-            console.log(chalk.blueBright(`[${timestamp}] Page vide à nouveau.`));
+            console.log(`[${timestamp}] Page vide à nouveau.`);
             lastState = true;
         } else if (!isEmpty && lastState) {
-            console.log(chalk.yellowBright(`[${timestamp}] Nouvelle annonce détectée ! ✨`));
+            console.log(`[${timestamp}] Nouvelle annonce détectée !`);
             lastState = false;
             await sendTelegram('🚨 Nouvelle annonce sur QuintoAndar !');
         } else {
-            console.log(chalk.gray(`[${timestamp}] Pas de changement.`));
+            console.log(`[${timestamp}] Pas de changement.`);
         }
 
     } catch (err) {
-        console.error(chalk.red('Erreur checkPage:'), err);
+        console.error('Erreur checkPage:', err);
     } finally {
         if (browser) await browser.close();
     }
 }
 
-// 🔁 Lancer le monitoring toutes les 30 secondes
-function startMonitoring() {
-    console.log(chalk.hex('#00FFFF')('💎 Monitoring QuintoAndar démarré toutes les 30 secondes...'));
-    setInterval(checkPage, 30000);
-}
+// 🔄 Lancement toutes les 30 secondes
+setInterval(checkPage, 30000);
+console.log('💎 Monitoring QuintoAndar démarré toutes les 30 secondes...');
 
-// 🚀 Serveur Express pour EvenNode
+// 🌐 Serveur Express
 const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => res.send('💎 Monitoring QuintoAndar actif !'));
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
-    startMonitoring();
-});
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
