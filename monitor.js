@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const axios = require('axios');
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
@@ -6,6 +6,7 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 (async () => {
   const browser = await puppeteer.launch({
+    executablePath: '/usr/bin/google-chrome',
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
@@ -15,7 +16,7 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
     waitUntil: 'networkidle2'
   });
 
-  await page.waitForTimeout(5000); // attendre 5 secondes
+  await page.waitForTimeout(5000);
 
   const content = await page.content();
 
