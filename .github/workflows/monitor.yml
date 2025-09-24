@@ -22,7 +22,7 @@ jobs:
         run: npm install
 
       - name: Run monitor.js
-        run: node monitor.js
+        run: node api/monitor.js
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
