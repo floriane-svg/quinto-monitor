@@ -20,12 +20,11 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
-      - name: Force Puppeteer install
-        run: npx puppeteer install
+        working-directory: ./api
 
       - name: Run monitor.js
         run: node monitor.js
+        working-directory: ./api
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
