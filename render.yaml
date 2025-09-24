@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: quinto-monitor
-    env: docker
-    plan: free
-    autoDeploy: true
-    region: oregon
