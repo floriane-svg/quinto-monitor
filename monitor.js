@@ -1,5 +1,4 @@
 const axios = require('axios');
-const cheerio = require('cheerio');
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -12,19 +11,19 @@ const urls = [
 (async () => {
   try {
     for (const url of urls) {
+      console.log(`🔍 Vérification : ${url}`);
+
       const response = await axios.get(url, {
         headers: { 'User-Agent': 'Mozilla/5.0' }
       });
 
-      const $ = cheerio.load(response.data);
-      const pageText = $.text();
+      const html = response.data.toLowerCase();
+      const hasApartmentCard = html.includes('cozy__cardrow-container');
 
-      const phrase = 'Não há imóveis no QuintoAndar para esta busca.';
-
-      if (!pageText.includes(phrase)) {
+      if (hasApartmentCard) {
         await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
           chat_id: TELEGRAM_CHAT_ID,
-          text: `🏠 Un bien est dispo sur QuintoAndar 👉 ${url}`
+          text: `🎉 Un bien est dispo sur QuintoAndar 👉 ${url}`
         });
         console.log(`✅ Bien détecté sur ${url}`);
       } else {
